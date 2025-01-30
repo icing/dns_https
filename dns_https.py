@@ -317,7 +317,7 @@ class HTTPSRecord:
                 break
             labels.append(data[0:label_len].encode())
             data = data[label_len:]
-        pub_name = '.'.join(labels)
+        target_name = '.'.join(labels)
         params = []
         while len(data) > 0:
             key_idx = int.from_bytes(data[0:2], byteorder='big')
@@ -327,7 +327,7 @@ class HTTPSRecord:
             param = cls._make_param(key_idx, data[0:plen])
             data = data[plen:]
             params.append(param)
-        return HTTPSRecord(priority=priority, pub_name=pub_name, params=params)
+        return HTTPSRecord(priority=priority, target_name=target_name, params=params)
 
     @classmethod
     def dig(cls, hostname):
@@ -344,21 +344,21 @@ class HTTPSRecord:
                 records.append(cls.parse_type65(data))
         return records
 
-    def __init__(self, priority, pub_name, params):
+    def __init__(self, priority, target_name, params):
         self.priority = priority
-        self.pub_name = pub_name
+        self.target_name = target_name
         self.params = params
 
     def __repr__(self):
         return f'HTTPSRecord[priority={self.priority}, ' \
-               f'pub_name={self.pub_name}, params={self.params}]'
+               f'target_name={self.target_name}, params={self.params}]'
 
     def to_json(self):
         obj = {
             'priority': self.priority,
         }
-        if self.pub_name:
-            obj['pub_name'] = self.pub_name
+        if self.target_name:
+            obj['target_name'] = self.target_name
         pjson = {}
         for p in self.params:
             pjson[p.name] = p.value_json()
